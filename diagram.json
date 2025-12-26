@@ -3,39 +3,29 @@
   "author": "Immilengo Hot",
   "editor": "wokwi",
   "parts": [
-    {
-      "type": "board-esp32-devkit-c-v4",
-      "id": "esp",
-      "top": 0,
-      "left": 0,
-      "attrs": {}
-    },
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": -4.76, "attrs": {} },
     {
       "type": "wokwi-potentiometer",
       "id": "pressure",
-      "top": -120,
-      "left": 180,
+      "top": -116.5,
+      "left": 172.6,
       "attrs": { "value": "2048" }
     },
-    {
-      "type": "wokwi-ds18b20",
-      "id": "temp",
-      "top": 120,
-      "left": 180,
-      "attrs": {}
-    }
+    { "type": "wokwi-ds18b20", "id": "temp", "top": 120, "left": 180, "attrs": {} },
+    { "type": "board-ds18b20", "id": "temp1", "top": -77.93, "left": -130.32, "attrs": {} }
   ],
   "connections": [
-    ["pressure:SIG", "esp:34", "green", []],
-    ["pressure:VCC", "esp:3V3", "red", []],
-    ["pressure:GND", "esp:GND", "black", []],
-
-    ["temp:DQ", "esp:15", "blue", []],
-    ["temp:VCC", "esp:3V3", "red", []],
-    ["temp:GND", "esp:GND", "black", []],
-
-    ["esp:TX", "$serialMonitor:RX", "", []],
-    ["esp:RX", "$serialMonitor:TX", "", []]
+    [ "pressure:SIG", "esp:34", "green", [] ],
+    [ "pressure:VCC", "esp:3V3", "red", [] ],
+    [ "pressure:GND", "esp:GND", "black", [] ],
+    [ "temp:DQ", "esp:15", "blue", [] ],
+    [ "temp:VCC", "esp:3V3", "red", [] ],
+    [ "temp:GND", "esp:GND", "black", [] ],
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "temp1:VCC", "esp:32", "red", [ "v0" ] ],
+    [ "temp1:DQ", "esp:33", "green", [ "v0" ] ],
+    [ "temp1:GND", "esp:25", "black", [ "v0" ] ]
   ],
   "dependencies": {}
 }
