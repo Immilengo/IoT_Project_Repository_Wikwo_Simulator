@@ -1,0 +1,50 @@
+{
+  "users": {
+    "userId123": {
+      "nome": "Inácio Mazanga",
+      "email": "inacio@email.com",
+      "telefone": "+2449xxxxxxx",
+      "fotoPerfilUrl": "https://storage.googleapis.com/...",
+      "criadoEm": 1737000000000
+    }
+  },
+
+  "botijas": {
+    "A123": {
+      "userId": "userId123",
+      "capacidadeKg": 13,
+      "pressaoMinima": 0.5,
+
+      "estadoAtual": {
+        "pressaoAtual": 4.5,
+        "temperaturaAtual": 28,
+        "atualizadoEm": 1737000000000
+      },
+
+      "leiturasRaw": {
+        "-Nx123": {
+          "pressao": 4.5,
+          "temperatura": 28
+        }
+      },
+
+      "dias": {
+        "2025-01-27": {
+          "somaPressao": 18.1,
+          "somaTemperatura": 112,
+          "contador": 4,
+          "pressaoMedia": 4.52,
+          "temperaturaMedia": 28.1,
+          "consumo": 0.18
+        }
+      },
+
+      "previsao": {
+        "consumoMedioDiario": 0.45,
+        "diasRestantesEstimados": 8,
+        "nivelRisco": "AVISO",
+        "atualizadoEm": 1737000000000
+      }
+    }
+  }
+}

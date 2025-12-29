@@ -1,53 +1,4 @@
-#include <OneWire.h>
-#include <DallasTemperature.h>
-
-// ---------- PINOS ----------
-#define PRESSURE_PIN 34
-#define ONE_WIRE_BUS 15
-
-// ---------- SENSOR TEMP ----------
-OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature sensors(&oneWire);
-
-// ---------- PARÂMETROS ----------
-const float PRESSAO_MAX = 6.0;   // bar
-const float TEMP_REF = 25.0;     // °C
-const float COEF_TEMP = 0.06;    // bar/°C
-
-void setup() {
-  Serial.begin(115200);
-  sensors.begin();
-}
-
-float lerPressao() {
-  int raw = analogRead(PRESSURE_PIN);
-  float tensao = raw * (3.3 / 4095.0);
-  return (tensao / 3.3) * PRESSAO_MAX;
-}
-
-float corrigirPressao(float p, float t) {
-  return p + COEF_TEMP * (t - TEMP_REF);
-}
-
-void loop() {
-  sensors.requestTemperatures();
-  float temperatura = sensors.getTempCByIndex(0);
-
-  float pressaoRaw = lerPressao();
-  float pressaoCorrigida = corrigirPressao(pressaoRaw, temperatura);
-
-  Serial.println("----- ENVIO PARA BACKEND -----");
-  Serial.print("{ \"pressao\": ");
-  Serial.print(pressaoCorrigida);
-  Serial.print(", \"temperatura\": ");
-  Serial.print(temperatura);
-  Serial.println(" }");
-
-  delay(5000);
-}
-
-
-/*#include <WiFi.h>
+#include <WiFi.h>
 #include <FirebaseClient.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
@@ -72,25 +23,28 @@ FirebaseConfig config;
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
-// ---------- PARÂMETROS ----------
-const float PRESSAO_MAX = 6.0;   // bar
-const float PRESSAO_MIN = 0.5;   // bar
-const float TEMP_REF = 25.0;     // °C
-const float COEF_TEMP = 0.06;    // bar/°C
+// ---------- PARAMETROS ----------
+const float PRESSAO_MAX = 6.0;
+const float TEMP_REF = 25.0;
+const float COEF_TEMP = 0.06;
+
+// ---------- FUNCOES ----------
+float lerPressao() {
+  int raw = analogRead(PRESSURE_PIN);
+  float tensao = raw * (3.3 / 4095.0);
+  return (tensao / 3.3) * PRESSAO_MAX;
+}
+
+float corrigirPressao(float p, float t) {
+  return p + COEF_TEMP * (t - TEMP_REF);
+}
 
 void setup() {
   Serial.begin(115200);
 
-  // WiFi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("Conectando ao WiFi");
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("\nWiFi conectado!");
+  while (WiFi.status() != WL_CONNECTED) delay(500);
 
-  // Firebase
   config.api_key = API_KEY;
   config.database_url = DATABASE_URL;
   Firebase.begin(&config, &auth);
@@ -99,47 +53,24 @@ void setup() {
   sensors.begin();
 }
 
-float lerPressao() {
-  int raw = analogRead(PRESSURE_PIN);
-  float tensao = raw * (3.3 / 4095.0);
-  float pressao = (tensao / 3.3) * PRESSAO_MAX;
-  return pressao;
-}
-
-float corrigirPressao(float p, float t) {
-  return p + COEF_TEMP * (t - TEMP_REF);
-}
-
 void loop() {
   sensors.requestTemperatures();
   float temperatura = sensors.getTempCByIndex(0);
 
+  if (temperatura == DEVICE_DISCONNECTED_C) return;
+
   float pressaoRaw = lerPressao();
   float pressaoCorrigida = corrigirPressao(pressaoRaw, temperatura);
 
-  Serial.println("----- LEITURA -----");
-  Serial.print("Pressão (raw): ");
-  Serial.print(pressaoRaw);
-  Serial.println(" bar");
+  FirebaseJson json;
+  json.set("pressao", pressaoCorrigida);
+  json.set("temperatura", temperatura);
 
-  Serial.print("Temperatura: ");
-  Serial.print(temperatura);
-  Serial.println(" °C");
-
-  Serial.print("Pressão corrigida: ");
-  Serial.print(pressaoCorrigida);
-  Serial.println(" bar");
-
-  // Envio Firebase
-  if (Firebase.ready()) {
-    FirebaseJson json;
-    json.set("pressao", pressaoCorrigida);
-    json.set("temperatura", temperatura);
-    json.set("timestamp", millis());
-
-    Firebase.RTDB.pushJSON(&fbdo, "/botijas/A123/leituras", &json);
-  }
+  Firebase.RTDB.pushJSON(
+    &fbdo,
+    "/botijas/A123/leiturasRaw",
+    &json
+  );
 
   delay(60000); // 1 minuto
 }
-*/ 
